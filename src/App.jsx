@@ -1,4 +1,6 @@
 import {Component} from 'react';
+import {nanoid} from 'nanoid'
+import Render from './Render';
 class App extends Component{
     state={
         name: '',
@@ -13,10 +15,10 @@ class App extends Component{
         this.setState({number:e.currentTarget.value})
     }
     add=()=>{
-        if(this.state.name.trim()!== '' && this.state.number.trim()!=='' && !this.state.contacts.includes(`${this.state.name} ${this.state.number}`)){
-            this.setState({contacts:[...this.state.contacts,`${this.state.name} ${this.state.number}`]})
+        if(this.state.name.trim()!== '' && this.state.number.trim()!=='' && !this.state.contacts.some(contact => contact.name === this.state.name.trim()) && !this.state.contacts.some(contact => contact.number === this.state.number.trim())){
+            this.setState({contacts:[...this.state.contacts,{name:this.state.name,number:this.state.number,id:nanoid()}]})
         }else{
-            alert('sdds')
+            alert('you need to change this contact because you already have this contact')
         }
     }
     deleteContact=(indOfEl)=>{
@@ -28,7 +30,6 @@ class App extends Component{
         this.setState({filter:filt})
     }
     render(){
-        const filter=this.state.contacts.filter(contact=>contact.toLowerCase().startsWith(this.state.filter.toLowerCase()))
         return (
             <div className="App">
             <label>
@@ -65,14 +66,7 @@ class App extends Component{
             onChange={(e)=>this.setFilterLetter(e.currentTarget.value)}
             />
             </label>
-            <ul>
-            {filter.map((item,index)=>(
-            <li key={index}>
-            {item} 
-            <button onClick={()=>this.deleteContact(index)}>Delete</button>
-            </li>
-            ))}
-            </ul>
+            <Render contacts={this.state.contacts} filter={this.state.filter} deleteContact={this.deleteContact} />
             </div>
     )
   }
